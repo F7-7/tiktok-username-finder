@@ -121,6 +121,16 @@ async function run(viewport) {
   assert.equal(rows.length, n + 2);
   log('export TXT (favorites) and CSV (all)');
 
+  // Import: statuses load, "available" in a file is refused, manual Confirmed available is kept.
+  const imp = { [names[20]]: { status: 'notfound' }, [names[21]]: { status: 'available' }, [first]: { status: 'taken' }, nope: { status: 'taken' } };
+  const impBefore = await page.textContent('#c-available');
+  await page.setInputFiles('#impFile', { name: 'r.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(imp)) });
+  await page.waitForFunction(() => /Imported 2 results, skipped 2/.test(document.querySelector('#toast').textContent));
+  assert.equal(await page.$eval(`[data-u="${names[20]}"] select`, e => e.value), 'notfound');
+  assert.equal(await page.$eval(`[data-u="${names[21]}"] select`, e => e.value), 'unverified');
+  assert.equal(await page.textContent('#c-available'), impBefore);
+  log('import results: no "available" from files');
+
   // Persistence across reload.
   await page.reload();
   await page.waitForSelector('#list .item');

@@ -124,6 +124,8 @@
       </div>
       <div class="bulk">
         <button class="btn primary sm" id="checkMode" type="button">Start checking ▸</button>
+        <button class="btn ghost sm" id="impBtn" type="button">Import results</button>
+        <input type="file" id="impFile" accept=".json,application/json" hidden>
         <button class="btn ghost sm" id="expTxt" type="button">Export TXT</button>
         <button class="btn ghost sm" id="expCsv" type="button">Export CSV</button>
         <button class="btn ghost sm danger" id="clear" type="button">Clear results</button>
@@ -145,6 +147,7 @@
       <li><b>“Couldn't find this account”</b> doesn't mean it's free. Banned, deleted and reserved names show the same page. Mark it <span class="tag s-notfound">No profile found</span>.</li>
       <li><b>Confirm in the app.</b> In TikTok go to <i>Profile → Edit profile → Username</i> and type the name. If TikTok accepts it, mark it <span class="tag s-available">Confirmed available</span>. Only this step proves a name is free.</li>
     </ol>
+    <p class="muted"><b>Optional local helper.</b> <span class="mono">tools/check.py</span> runs on your own computer, slowly, and writes a results file you can load with <b>Import results</b>. It can only produce Taken, No profile found or Couldn't tell, never Available. See the README, and note that automated requests may go against TikTok's terms.</p>
     <p class="muted">Check at a human pace. Fast lookups get rate-limited. This tool never asks for your TikTok password, cookies or tokens, and makes no requests to TikTok itself. Your results, favorites and statuses stay in this browser. TikTok lets you change your username once every 30 days. Not affiliated with or endorsed by TikTok.</p>
   </section>
 </main>

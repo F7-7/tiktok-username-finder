@@ -307,6 +307,30 @@ $('#expCsv').addEventListener('click', () => {
   download(`tiktok-usernames-${stamp()}.csv`, 'text/csv', rows.map(r => r.map(csvCell).join(',')).join('\n') + '\n');
   toast(`Exported ${v.length} rows`);
 });
+// Imports the JSON written by tools/check.py. "available" is never accepted from a file, and a status the
+// user set by hand as Confirmed available is never overwritten.
+$('#impBtn').addEventListener('click', () => $('#impFile').click());
+$('#impFile').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  let data;
+  try { data = JSON.parse(await f.text()); } catch { toast('That file is not valid JSON.'); return; }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) { toast('Unexpected file format.'); return; }
+  const allowed = ['taken', 'notfound', 'unknown'];
+  const known = new Set(state.items.map(i => i.username));
+  let n = 0, skipped = 0;
+  for (const [u, r] of Object.entries(data)) {
+    const s = r && r.status;
+    if (!known.has(u) || !allowed.includes(s) || statusOf(u) === 'available') { skipped++; continue; }
+    state.status[u] = { s, at: typeof r.at === 'string' ? r.at : new Date().toISOString() };
+    n++;
+  }
+  save();
+  render();
+  toast(`Imported ${n} results${skipped ? `, skipped ${skipped}` : ''}. Nothing imported counts as available.`);
+});
+
 $('#clear').addEventListener('click', () => {
   const keep = state.items.filter(i => state.fav.has(i.username));
   if (!confirm(`Clear ${state.items.length - keep.length} results? Favorites (${keep.length}) are kept.`)) return;
